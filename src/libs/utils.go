@@ -219,7 +219,7 @@ func (util *Utils) ServiceRegisterYML(path string) (entity.ServiceRegister, erro
 
 // GetPCurrentPath get current path
 // return string
-func (util *Utils) getPCurrentPath() string {
+func (util *Utils) GetCurrentPath() string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	util.Check(err)
 	return dir

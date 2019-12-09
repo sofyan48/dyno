@@ -37,8 +37,17 @@ func service() cli.Command {
 		if err != nil {
 			log.Fatalln(err)
 		}
-
-		dataRegister, err := library.Utils.ServiceRegisterYML(Args.TemplatePath)
+		argsFile := Args.TemplatePath
+		var templates string
+		if argsFile == "" {
+			templates = library.Utils.GetCurrentPath() + "/dyno.yml"
+		} else {
+			templates = argsFile
+		}
+		if !library.Utils.CheckFile(templates) {
+			return cli.NewExitError("No Templates Parse", 1)
+		}
+		dataRegister, err := library.Utils.ServiceRegisterYML(argsFile)
 		if err != nil {
 			log.Fatalln(err)
 		}
