@@ -6,7 +6,6 @@ import (
 
 	"github.com/sofyan48/dyno/src/config"
 	"github.com/sofyan48/dyno/src/libs"
-	"github.com/sofyan48/dyno/src/libs/entity"
 	"github.com/urfave/cli"
 )
 
@@ -38,8 +37,11 @@ func service() cli.Command {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		dataRegister := entity.ServiceRegister{}
-		// parse yaml to dataRegister
+
+		dataRegister, err := library.Utils.ServiceRegisterYML(Args.TemplatePath)
+		if err != nil {
+			log.Fatalln(err)
+		}
 		library.Service.RegisterConsul(client, dataRegister)
 		return nil
 	}
