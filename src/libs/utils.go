@@ -3,6 +3,7 @@ package libs
 import (
 	"encoding/json"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/user"
@@ -10,6 +11,8 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/sofyan48/dyno/src/libs/entity"
+	"gopkg.in/yaml.v2"
 )
 
 // Check Error
@@ -184,20 +187,20 @@ func (util *Utils) GetAllEnvirontment() map[string]string {
 	return myEnv
 }
 
-// // ReadYML read YML File
-// // return map,error
-// func (util *Utils)ReadYML(path string) (scheme.RegisterTask, error) {
-// 	var taskRegister scheme.RegisterTask
-// 	ymlFile, err := ioutil.ReadFile(path)
-// 	if Check(err) != nil {
-// 		return taskRegister, err
-// 	}
-// 	err = yaml.Unmarshal(ymlFile, &taskRegister)
-// 	if Check(err) != nil {
-// 		return taskRegister, err
-// 	}
-// 	return taskRegister, nil
-// }
+// ServiceRegisterYML read YML File
+// return map,error
+func (util *Utils) ServiceRegisterYML(path string) (entity.ServiceRegister, error) {
+	taskRegister := entity.ServiceRegister{}
+	ymlFile, err := ioutil.ReadFile(path)
+	if util.Check(err) != nil {
+		return taskRegister, err
+	}
+	err = yaml.Unmarshal(ymlFile, &taskRegister)
+	if util.Check(err) != nil {
+		return taskRegister, err
+	}
+	return taskRegister, nil
+}
 
 // // ReadYMLSend read YML File
 // // return map,error
