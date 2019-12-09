@@ -7,11 +7,12 @@ import (
 
 // Library types
 type Library struct {
-	Utils libs.Libs
+	Utils   libs.Libs
+	Service libs.Service
 }
 
 func service() cli.Command {
-	util := Library{}
+	library := Library{}
 	command := cli.Command{}
 	command.Name = "service"
 	command.Usage = "service start, service configure"
@@ -39,8 +40,9 @@ func service() cli.Command {
 		// libs.Check(err)
 
 		//load environtment
-		util.Utils.LoadEnvirontment(Args.EnvPath)
-		util.Utils.LogInfo("OK ", "CUK")
+		library.Utils.LoadEnvirontment(Args.EnvPath)
+		library.Utils.LogInfo("OK ", "CUK")
+		library.Service.Register()
 		return nil
 	}
 
