@@ -1,7 +1,12 @@
 package cmd
 
 import (
+	"log"
+	"os"
+
+	"github.com/sofyan48/dyno/src/config"
 	"github.com/sofyan48/dyno/src/libs"
+	"github.com/sofyan48/dyno/src/libs/entity"
 	"github.com/urfave/cli"
 )
 
@@ -13,6 +18,7 @@ type Library struct {
 
 func service() cli.Command {
 	library := Library{}
+	cfg := config.Config{}
 	command := cli.Command{}
 	command.Name = "service"
 	command.Usage = "service start, service configure"
@@ -24,25 +30,17 @@ func service() cli.Command {
 		},
 	}
 	command.Action = func(c *cli.Context) error {
-		// init template file
-		// argsFile := Args.TemplatePath
-		// var templates string
-
-		// if argsFile == "" {
-		// 	templates = util.Utils. + "/duck.yml"
-		// } else {
-		// 	templates = argsFile
-		// }
-		// if !utils.Utils.CheckFile(templates) {
-		// 	return cli.NewExitError("No Templates For Send", 1)
-		// }
-		// ymlData, err := libs.ReadYMLSend(templates)
-		// libs.Check(err)
-
-		//load environtment
 		library.Utils.LoadEnvirontment(Args.EnvPath)
-		library.Utils.LogInfo("OK ", "CUK")
-		library.Service.Register()
+		consulConfig := cfg.CosulConfig.Config()
+		consulConfig.Address = os.Getenv("CONSUL_HOST")
+		consulConfig.Scheme = "http"
+		client, err := cfg.CosulConfig.New(consulConfig)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		dataRegister := entity.ServiceRegister{}
+		// parse yaml to dataRegister
+		library.Service.RegisterConsul(client, dataRegister)
 		return nil
 	}
 

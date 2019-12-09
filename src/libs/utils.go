@@ -16,7 +16,7 @@ import (
 // @e: error
 func (util *Utils) Check(e error) error {
 	if e != nil {
-		panic(e)
+		util.LogFatal("Error : ", e)
 	}
 	return e
 }
