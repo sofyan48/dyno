@@ -39,6 +39,8 @@ func Init() *cli.App {
 // AppCommands All Command line app
 func AppCommands() *cli.App {
 	app := Init()
-	app.Commands = []cli.Command{}
+	app.Commands = []cli.Command{
+		service(),
+	}
 	return app
 }
