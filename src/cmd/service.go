@@ -7,7 +7,7 @@ import (
 
 // Library types
 type Library struct {
-	Utils   libs.Libs
+	Utils   libs.Utils
 	Service libs.Service
 }
 

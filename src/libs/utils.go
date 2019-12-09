@@ -14,7 +14,7 @@ import (
 
 // Check Error
 // @e: error
-func (lb *Libs) Check(e error) error {
+func (util *Utils) Check(e error) error {
 	if e != nil {
 		panic(e)
 	}
@@ -22,21 +22,21 @@ func (lb *Libs) Check(e error) error {
 }
 
 // LogInfo ...
-func (lb *Libs) LogInfo(word string, report interface{}) {
+func (util *Utils) LogInfo(word string, report interface{}) {
 	log.Println(word, report)
 }
 
 // LogFatal ...
-func (lb *Libs) LogFatal(word string, report interface{}) {
+func (util *Utils) LogFatal(word string, report interface{}) {
 	log.Println(word, report)
 }
 
 // CheckFile function check folder
 // @path : string
 // return error
-func (lb *Libs) CheckFile(path string) bool {
+func (util *Utils) CheckFile(path string) bool {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		lb.LogFatal("Error :", err)
+		util.LogFatal("Error :", err)
 		return false
 	}
 	return true
@@ -45,7 +45,7 @@ func (lb *Libs) CheckFile(path string) bool {
 // MakeDirs fucntion create directory
 // @path : string
 // return error
-func (lb *Libs) MakeDirs(path string) error {
+func (util *Utils) MakeDirs(path string) error {
 	err := os.MkdirAll(path, os.ModePerm)
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func (lb *Libs) MakeDirs(path string) error {
 // FileRemove Remove Files
 // @path : string
 // return error
-func (lb *Libs) FileRemove(path string) error {
+func (util *Utils) FileRemove(path string) error {
 	err := os.Remove(path)
 	if err != nil {
 		return err
@@ -67,12 +67,12 @@ func (lb *Libs) FileRemove(path string) error {
 // CreateFile function create file
 // @path : string
 // return bool
-func (lb *Libs) CreateFile(path string) bool {
+func (util *Utils) CreateFile(path string) bool {
 	var _, err = os.Stat(path)
 
 	if os.IsNotExist(err) {
 		var file, err = os.Create(path)
-		lb.Check(err)
+		util.Check(err)
 		defer file.Close()
 		return false
 	}
@@ -80,21 +80,21 @@ func (lb *Libs) CreateFile(path string) bool {
 }
 
 // WriteFile func write local file
-func (lb *Libs) WriteFile(path string, value string, perm os.FileMode) bool {
+func (util *Utils) WriteFile(path string, value string, perm os.FileMode) bool {
 	var file, err = os.OpenFile(path, os.O_RDWR, perm)
-	if lb.Check(err) != nil {
+	if util.Check(err) != nil {
 		return false
 	}
 	defer file.Close()
 
 	// write some text line-by-line to file
 	_, err = file.WriteString(value)
-	if lb.Check(err) != nil {
+	if util.Check(err) != nil {
 		return false
 	}
 	// save changes
 	err = file.Sync()
-	if lb.Check(err) != nil {
+	if util.Check(err) != nil {
 		return false
 	}
 
@@ -102,9 +102,9 @@ func (lb *Libs) WriteFile(path string, value string, perm os.FileMode) bool {
 }
 
 // ReadFile function
-func (lb *Libs) ReadFile(path string, perm os.FileMode) string {
+func (util *Utils) ReadFile(path string, perm os.FileMode) string {
 	var file, err = os.OpenFile(path, os.O_RDWR, perm)
-	if lb.Check(err) != nil {
+	if util.Check(err) != nil {
 		return err.Error()
 	}
 	defer file.Close()
@@ -115,7 +115,7 @@ func (lb *Libs) ReadFile(path string, perm os.FileMode) string {
 			break
 		}
 		if err != nil && err != io.EOF {
-			if lb.Check(err) != nil {
+			if util.Check(err) != nil {
 				return err.Error()
 			}
 			break
@@ -125,9 +125,9 @@ func (lb *Libs) ReadFile(path string, perm os.FileMode) string {
 }
 
 // DeleteFile Function
-func (lb *Libs) DeleteFile(path string) bool {
+func (util *Utils) DeleteFile(path string) bool {
 	var err = os.Remove(path)
-	if lb.Check(err) != nil {
+	if util.Check(err) != nil {
 		return false
 	}
 	return true
@@ -136,7 +136,7 @@ func (lb *Libs) DeleteFile(path string) bool {
 // CheckEnvironment function check default env
 // @path : string
 // return bool, error
-func (lb *Libs) CheckEnvironment(path string) (bool, error) {
+func (util *Utils) CheckEnvironment(path string) (bool, error) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return false, err
 	}
@@ -145,48 +145,48 @@ func (lb *Libs) CheckEnvironment(path string) (bool, error) {
 
 // ReadHome function
 // return string
-func (lb *Libs) ReadHome() string {
+func (util *Utils) ReadHome() string {
 	usr, err := user.Current()
-	lb.Check(err)
+	util.Check(err)
 	return usr.HomeDir
 }
 
 // LoadEnvirontment load environment config
 // @path : string
-func (lb *Libs) LoadEnvirontment(path string) error {
+func (util *Utils) LoadEnvirontment(path string) error {
 	if path == "" {
-		homeDir := lb.ReadHome()
+		homeDir := util.ReadHome()
 		err := godotenv.Load(homeDir + "/.duck")
-		lb.Check(err)
+		util.Check(err)
 		return err
 	}
 	err := godotenv.Load(path)
-	lb.Check(err)
+	util.Check(err)
 	return err
 }
 
 // GetEnvirontment Get value from environtment
 // @key : string
-func (lb *Libs) GetEnvirontment(key string) string {
+func (util *Utils) GetEnvirontment(key string) string {
 	var myEnv map[string]string
 	myEnv, err := godotenv.Read()
-	lb.Check(err)
+	util.Check(err)
 	return myEnv[key]
 }
 
 // GetAllEnvirontment Get value from environtment
 // @key : string
-func (lb *Libs) GetAllEnvirontment() map[string]string {
+func (util *Utils) GetAllEnvirontment() map[string]string {
 	godotenv.Load()
 	var myEnv map[string]string
 	myEnv, err := godotenv.Read()
-	lb.Check(err)
+	util.Check(err)
 	return myEnv
 }
 
 // // ReadYML read YML File
 // // return map,error
-// func (lb *Libs)ReadYML(path string) (scheme.RegisterTask, error) {
+// func (util *Utils)ReadYML(path string) (scheme.RegisterTask, error) {
 // 	var taskRegister scheme.RegisterTask
 // 	ymlFile, err := ioutil.ReadFile(path)
 // 	if Check(err) != nil {
@@ -216,15 +216,15 @@ func (lb *Libs) GetAllEnvirontment() map[string]string {
 
 // GetPCurrentPath get current path
 // return string
-func (lb *Libs) getPCurrentPath() string {
+func (util *Utils) getPCurrentPath() string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	lb.Check(err)
+	util.Check(err)
 	return dir
 }
 
 // ConvertUnixTime ...
 // @unixTime: int64
-func (lb *Libs) ConvertUnixTime(unixTime int64) time.Time {
+func (util *Utils) ConvertUnixTime(unixTime int64) time.Time {
 	tm := time.Unix(unixTime, 0)
 	return tm
 }
@@ -232,11 +232,11 @@ func (lb *Libs) ConvertUnixTime(unixTime int64) time.Time {
 // ParseJSON function conver json string to object
 // @data: string
 // return map[string]interface{}, error
-func (lb *Libs) ParseJSON(data string) (map[string]interface{}, error) {
+func (util *Utils) ParseJSON(data string) (map[string]interface{}, error) {
 	result := make(map[string]interface{})
 	err := json.Unmarshal([]byte(data), &result)
 	if err != nil {
-		lb.Check(err)
+		util.Check(err)
 		return nil, err
 	}
 	return result, nil
