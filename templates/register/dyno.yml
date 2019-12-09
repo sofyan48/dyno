@@ -1,0 +1,7 @@
+id: testing
+name: testing
+host: "127.0.0.1"
+port: "8500"
+health_check: v1/health/check
+interval: 5s
+timeout: 3s
