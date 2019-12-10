@@ -44,6 +44,23 @@ func (svc *Service) ListServiceConsul(client *api.Client) (map[string]*api.Agent
 	return client.Agent().Services()
 }
 
+// ServiceLookupConsul get Lookup
+func (svc *Service) ServiceLookupConsul(client *api.Client, ID string) (string, error) {
+	services, err := client.Agent().Services()
+	if err != nil {
+		return "", err
+	}
+	srvc := services[ID]
+	address := srvc.Address
+	port := srvc.Port
+	return fmt.Sprintf("http://%s:%v", address, port), nil
+}
+
+// GetHealthByIDConsul ...
+func (svc *Service) GetHealthByIDConsul(client *api.Client, ID string) (string, *api.AgentServiceChecksInfo, error) {
+	return client.Agent().AgentHealthServiceByID(ID)
+}
+
 func (svc *Service) registerConsul(client *api.Client, regis entity.ServiceRegister) error {
 	registration := svc.GetAgentServiceConsul()
 	registration.ID = regis.ID

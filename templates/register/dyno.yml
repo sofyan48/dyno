@@ -5,5 +5,5 @@ service:
     port: "8200"
 healthcheck:
     path: healthcheck
-    interval: 5s
+    interval: 50s
     timeout: 3s

@@ -203,22 +203,7 @@ func (util *Utils) ServiceRegisterYML(path string) (entity.ServiceRegisterYML, e
 	return taskRegister, nil
 }
 
-// // ReadYMLSend read YML File
-// // return map,error
-// func ReadYMLSend(path string) (scheme.SendTask, error) {
-// 	var taskSend scheme.SendTask
-// 	ymlFile, err := ioutil.ReadFile(path)
-// 	if Check(err) != nil {
-// 		return taskSend, err
-// 	}
-// 	err = yaml.Unmarshal(ymlFile, &taskSend)
-// 	if Check(err) != nil {
-// 		return taskSend, err
-// 	}
-// 	return taskSend, nil
-// }
-
-// GetPCurrentPath get current path
+// GetCurrentPath get current path
 // return string
 func (util *Utils) GetCurrentPath() string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
