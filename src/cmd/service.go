@@ -2,20 +2,11 @@ package cmd
 
 import (
 	"log"
-	"os"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/sofyan48/dyno/src/config"
 	"github.com/sofyan48/dyno/src/libs"
 	"github.com/sofyan48/dyno/src/libs/entity"
 	"github.com/urfave/cli"
 )
-
-// Library types
-type Library struct {
-	Utils   libs.Utils
-	Service libs.Service
-}
 
 func service() cli.Command {
 	command := cli.Command{}
@@ -32,7 +23,6 @@ func service() cli.Command {
 		library := Library{}
 		argsFile := Args.TemplatePath
 		templates, err := library.Utils.CheckTemplateFile(argsFile)
-		library.Utils.LoadEnvirontment(Args.EnvPath)
 		ymlRegis, err := library.Utils.ServiceRegisterYML(templates)
 		if err != nil {
 			log.Fatalln(err)
@@ -65,23 +55,15 @@ func service() cli.Command {
 	return command
 }
 
-func initConfigConsul() (*api.Client, error) {
-	// get consul client
-	cfg := config.Config{}
-	consulConfig := cfg.CosulConfig.Config()
-	consulConfig.Address = os.Getenv("CONSUL_HOST")
-	consulConfig.Scheme = "http"
-	return cfg.CosulConfig.New(consulConfig)
-}
-
 func initDeregister(ID string) error {
-	library := libs.Service{}
+	library := Library{}
+	library.Utils.LoadEnvirontment(Args.EnvPath)
 	client, err := initConfigConsul()
 	if err != nil {
 		log.Fatalln(err)
 		return err
 	}
-	return library.UnRegisterConsul(client, ID)
+	return library.Service.UnRegisterConsul(client, ID)
 }
 
 func initCheckService(ymlRegis entity.ServiceRegisterYML) error {

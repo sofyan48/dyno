@@ -27,7 +27,7 @@ func (util *Utils) Check(e error) error {
 
 // LogInfo ...
 func (util *Utils) LogInfo(word string, report interface{}) {
-	log.Println(word, report)
+	log.Println(word, ":", report)
 }
 
 // LogFatal ...
