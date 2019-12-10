@@ -39,6 +39,11 @@ func (svc *Service) UnRegisterConsul(client *api.Client, ID string) error {
 	return client.Agent().ServiceDeregister(ID)
 }
 
+// ListServiceConsul list all service
+func (svc *Service) ListServiceConsul(client *api.Client) (map[string]*api.AgentService, error) {
+	return client.Agent().Services()
+}
+
 func (svc *Service) registerConsul(client *api.Client, regis entity.ServiceRegister) error {
 	registration := svc.GetAgentServiceConsul()
 	registration.ID = regis.ID
