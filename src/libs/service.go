@@ -34,6 +34,11 @@ func (svc *Service) CheckServiceConsul(client *api.Client, regis entity.ServiceR
 	return client.Agent().CheckRegister(registran)
 }
 
+// UnRegisterConsul uregister consul
+func (svc *Service) UnRegisterConsul(client *api.Client, ID string) error {
+	return client.Agent().ServiceDeregister(ID)
+}
+
 func (svc *Service) registerConsul(client *api.Client, regis entity.ServiceRegister) error {
 	registration := svc.GetAgentServiceConsul()
 	registration.ID = regis.ID

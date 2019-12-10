@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/hashicorp/consul/api"
 	"github.com/sofyan48/dyno/src/config"
 	"github.com/sofyan48/dyno/src/libs"
 	"github.com/sofyan48/dyno/src/libs/entity"
@@ -31,9 +32,25 @@ func service() cli.Command {
 		library := Library{}
 		argsFile := Args.TemplatePath
 		templates, err := library.Utils.CheckTemplateFile(argsFile)
-		err = initServiceRegister(templates)
+		library.Utils.LoadEnvirontment(Args.EnvPath)
+		ymlRegis, err := library.Utils.ServiceRegisterYML(templates)
 		if err != nil {
-			return cli.NewExitError(err.Error(), 1)
+			log.Fatalln(err)
+			return err
+		}
+		cmd := c.Args()[0]
+		if cmd == "register" {
+			err = initServiceRegister(ymlRegis)
+			if err != nil {
+				return cli.NewExitError(err.Error(), 1)
+			}
+		}
+		if cmd == "check" {
+			err = initCheckService(ymlRegis)
+			if err != nil {
+				return cli.NewExitError(err.Error(), 1)
+			}
+			library.Utils.LogInfo("Service Register ", "OK")
 		}
 		return nil
 	}
@@ -41,16 +58,33 @@ func service() cli.Command {
 	return command
 }
 
-func initServiceRegister(path string) error {
-	library := Library{}
+func initConfigConsul() (*api.Client, error) {
+	// get consul client
+	cfg := config.Config{}
+	consulConfig := cfg.CosulConfig.Config()
+	consulConfig.Address = os.Getenv("CONSUL_HOST")
+	consulConfig.Scheme = "http"
+	return cfg.CosulConfig.New(consulConfig)
+}
 
-	library.Utils.LoadEnvirontment(Args.EnvPath)
-
-	ymlRegis, err := library.Utils.ServiceRegisterYML(path)
+func initCheckService(ymlRegis entity.ServiceRegisterYML) error {
+	library := libs.Service{}
+	regis := entity.ServiceRegister{}
+	regis.Host = ymlRegis.Service.Host
+	regis.Port = ymlRegis.Service.Port
+	regis.ID = ymlRegis.Service.ID
+	regis.Name = ymlRegis.Service.Name
+	client, err := initConfigConsul()
 	if err != nil {
 		log.Fatalln(err)
 		return err
 	}
+	return library.CheckServiceConsul(client, regis)
+}
+
+func initServiceRegister(ymlRegis entity.ServiceRegisterYML) error {
+	library := Library{}
+
 	regis := entity.ServiceRegister{}
 	regis.Host = ymlRegis.Service.Host
 	regis.Port = ymlRegis.Service.Port
@@ -60,12 +94,7 @@ func initServiceRegister(path string) error {
 	regis.HealthCheck = ymlRegis.HealthCheck.Endpoint
 	regis.Interval = ymlRegis.HealthCheck.Interval
 	regis.Timeout = ymlRegis.HealthCheck.Timeout
-	// get consul client
-	cfg := config.Config{}
-	consulConfig := cfg.CosulConfig.Config()
-	consulConfig.Address = os.Getenv("CONSUL_HOST")
-	consulConfig.Scheme = "http"
-	client, err := cfg.CosulConfig.New(consulConfig)
+	client, err := initConfigConsul()
 	if err != nil {
 		log.Fatalln(err)
 		return err
