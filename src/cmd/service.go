@@ -52,6 +52,13 @@ func service() cli.Command {
 			}
 			library.Utils.LogInfo("Service Register ", "OK")
 		}
+
+		if cmd == "unregister" {
+			err = initDeregister(ymlRegis.Service.ID)
+			if err != nil {
+				return cli.NewExitError(err.Error(), 1)
+			}
+		}
 		return nil
 	}
 
@@ -65,6 +72,16 @@ func initConfigConsul() (*api.Client, error) {
 	consulConfig.Address = os.Getenv("CONSUL_HOST")
 	consulConfig.Scheme = "http"
 	return cfg.CosulConfig.New(consulConfig)
+}
+
+func initDeregister(ID string) error {
+	library := libs.Service{}
+	client, err := initConfigConsul()
+	if err != nil {
+		log.Fatalln(err)
+		return err
+	}
+	return library.UnRegisterConsul(client, ID)
 }
 
 func initCheckService(ymlRegis entity.ServiceRegisterYML) error {
