@@ -12,6 +12,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/sofyan48/dyno/src/libs/entity"
+	"github.com/urfave/cli"
 	"gopkg.in/yaml.v2"
 )
 
@@ -159,7 +160,7 @@ func (util *Utils) ReadHome() string {
 func (util *Utils) LoadEnvirontment(path string) error {
 	if path == "" {
 		homeDir := util.ReadHome()
-		err := godotenv.Load(homeDir + "/.duck")
+		err := godotenv.Load(homeDir + "/.dyno")
 		util.Check(err)
 		return err
 	}
@@ -189,8 +190,8 @@ func (util *Utils) GetAllEnvirontment() map[string]string {
 
 // ServiceRegisterYML read YML File
 // return map,error
-func (util *Utils) ServiceRegisterYML(path string) (entity.ServiceRegister, error) {
-	taskRegister := entity.ServiceRegister{}
+func (util *Utils) ServiceRegisterYML(path string) (entity.ServiceRegisterYML, error) {
+	taskRegister := entity.ServiceRegisterYML{}
 	ymlFile, err := ioutil.ReadFile(path)
 	if util.Check(err) != nil {
 		return taskRegister, err
@@ -243,4 +244,19 @@ func (util *Utils) ParseJSON(data string) (map[string]interface{}, error) {
 		return nil, err
 	}
 	return result, nil
+}
+
+// CheckTemplateFile check template path
+// @argsFile: string
+func (util *Utils) CheckTemplateFile(path string) (string, error) {
+	var templates string
+	if path == "" {
+		templates = util.GetCurrentPath() + "/dyno.yml"
+	} else {
+		templates = path
+	}
+	if !util.CheckFile(templates) {
+		return "", cli.NewExitError("No Templates Parse", 1)
+	}
+	return templates, nil
 }
