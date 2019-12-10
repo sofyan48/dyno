@@ -32,12 +32,14 @@ func list() cli.Command {
 			for n, i := range data {
 				fmt.Println("#####################################################")
 				fmt.Println("List Service", n)
-				fmt.Println("#####################################################")
+				fmt.Println("-----------------------------------------------------")
 				library.Utils.LogInfo("ID", i.ID)
 				library.Utils.LogInfo("Name", i.Service)
-				library.Utils.LogInfo("Addres", i.Address)
+				library.Utils.LogInfo("Address", i.Address)
 				library.Utils.LogInfo("Port", i.Port)
 				library.Utils.LogInfo("Tags", i.Tags)
+				status, _, _ := library.Service.GetHealthByIDConsul(client, i.ID)
+				library.Utils.LogInfo("Health", status)
 			}
 		}
 

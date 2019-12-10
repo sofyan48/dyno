@@ -18,24 +18,27 @@ func service() cli.Command {
 			Usage:       "File Template Path",
 			Destination: &Args.TemplatePath,
 		},
+
+		cli.StringFlag{
+			Name:        "ID, i",
+			Usage:       "Service Identity",
+			Destination: &Args.ID,
+		},
 	}
 	command.Action = func(c *cli.Context) error {
 		library := Library{}
-		argsFile := Args.TemplatePath
-		templates, err := library.Utils.CheckTemplateFile(argsFile)
-		ymlRegis, err := library.Utils.ServiceRegisterYML(templates)
-		if err != nil {
-			log.Fatalln(err)
-			return err
-		}
+
 		cmd := c.Args()[0]
-		if cmd == "register" {
+		if cmd == "add" {
+			ymlRegis, err := checkTemplate()
 			err = initServiceRegister(ymlRegis)
 			if err != nil {
 				return cli.NewExitError(err.Error(), 1)
 			}
 		}
 		if cmd == "check" {
+
+			ymlRegis, err := checkTemplate()
 			err = initCheckService(ymlRegis)
 			if err != nil {
 				return cli.NewExitError(err.Error(), 1)
@@ -43,16 +46,72 @@ func service() cli.Command {
 			library.Utils.LogInfo("Service Register ", "OK")
 		}
 
-		if cmd == "unregister" {
+		if cmd == "delete" {
+			ymlRegis, err := checkTemplate()
 			err = initDeregister(ymlRegis.Service.ID)
 			if err != nil {
 				return cli.NewExitError(err.Error(), 1)
 			}
 		}
+
+		if cmd == "lookup" {
+			client, err := initConfigConsul()
+			if err != nil {
+				return cli.NewExitError(err.Error(), 1)
+			}
+			var ID string
+			if Args.ID == "" {
+				ymlRegis, err := checkTemplate()
+				if err != nil {
+					return cli.NewExitError(err.Error(), 1)
+				}
+				ID = ymlRegis.Service.ID
+			} else {
+				ID = Args.ID
+			}
+			address, err := library.Service.ServiceLookupConsul(client, ID)
+			if err != nil {
+				return cli.NewExitError(err.Error(), 1)
+			}
+			library.Utils.LogInfo("Result", address)
+		}
+
+		if cmd == "health" {
+			client, err := initConfigConsul()
+			if err != nil {
+				return cli.NewExitError(err.Error(), 1)
+			}
+			var ID string
+			if Args.ID == "" {
+				ymlRegis, err := checkTemplate()
+				if err != nil {
+					return cli.NewExitError(err.Error(), 1)
+				}
+				ID = ymlRegis.Service.ID
+			} else {
+				ID = Args.ID
+			}
+			status, _, _ := library.Service.GetHealthByIDConsul(client, ID)
+			if err != nil {
+				return cli.NewExitError(err.Error(), 1)
+			}
+			library.Utils.LogInfo("Health", status)
+		}
 		return nil
 	}
 
 	return command
+}
+
+func checkTemplate() (entity.ServiceRegisterYML, error) {
+	argsFile := Args.TemplatePath
+	library := Library{}
+	templates, err := library.Utils.CheckTemplateFile(argsFile)
+	ymlRegis, err := library.Utils.ServiceRegisterYML(templates)
+	if err != nil {
+		return ymlRegis, err
+	}
+	return ymlRegis, nil
 }
 
 func initDeregister(ID string) error {

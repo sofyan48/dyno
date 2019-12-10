@@ -13,11 +13,9 @@ var app *cli.App
 
 // ArgsMapping object mapping
 type ArgsMapping struct {
-	EnvPath         string
-	TemplatePath    string
-	WorkerName      string
-	WorkerConcurent string
-	UUID            string
+	EnvPath      string
+	TemplatePath string
+	ID           string
 }
 
 // Args Glabal Acces args command
