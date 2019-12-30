@@ -75,5 +75,6 @@ func (svc *Service) registerConsul(client *api.Client, regis entity.ServiceRegis
 	registration.Check.HTTP = fmt.Sprintf("http://%s:%v/%s", regis.Host, prt, regis.HealthCheck)
 	registration.Check.Interval = regis.Interval
 	registration.Check.Timeout = regis.Timeout
+	registration.Tags = regis.Tags
 	return client.Agent().ServiceRegister(registration)
 }

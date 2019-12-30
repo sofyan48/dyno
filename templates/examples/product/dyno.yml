@@ -1,0 +1,9 @@
+service:
+    id: product
+    name: product
+    host: iank.local
+    port: "8100"
+healthcheck:
+    path: healthcheck
+    interval: 50s
+    timeout: 3s

@@ -72,7 +72,7 @@ func Products(w http.ResponseWriter, r *http.Request) {
 	products := []product{
 		{
 			ID:    1,
-			Name:  "Macbook",
+			Name:  "Macbook lagi",
 			Price: 2000000.00,
 		},
 	}
@@ -81,7 +81,7 @@ func Products(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	registerServiceWithConsul()
+	// registerServiceWithConsul()
 	http.HandleFunc("/healthcheck", healthcheck)
 	http.HandleFunc("/products", Products)
 	http.HandleFunc("/product/config", Configuration)

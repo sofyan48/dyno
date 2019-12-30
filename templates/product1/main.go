@@ -11,16 +11,16 @@ import (
 	consulapi "github.com/hashicorp/consul/api"
 )
 
-type order struct {
-	ID     uint64  `json:"id"`
-	Name   string  `json:"name"`
-	Price  float64 `json:"price"`
-	Status bool    `json:"status"`
+type product struct {
+	ID    uint64  `json:"id"`
+	Name  string  `json:"name"`
+	Price float64 `json:"price"`
 }
 
-type orderConfiguration struct {
+type ProductConfiguration struct {
 	Categories []string `json:"categories"`
 }
+
 
 func Configuration(w http.ResponseWriter, r *http.Request) {
 	config := consulapi.DefaultConfig()
@@ -29,7 +29,7 @@ func Configuration(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error. %s", err)
 		return
 	}
-	kvpair, _, err := consul.KV().Get("order-configuration", nil)
+	kvpair, _, err := consul.KV().Get("product-configuration", nil)
 	if err != nil {
 		fmt.Fprintf(w, "Error. %s", err)
 		return
@@ -43,38 +43,36 @@ func Configuration(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func Orders(w http.ResponseWriter, r *http.Request) {
-	orders := []order{
+func Products(w http.ResponseWriter, r *http.Request) {
+	products := []product{
 		{
-			ID:     1,
-			Name:   "Macbook Pro",
-			Price:  2000000.00,
-			Status: false,
+			ID:    1,
+			Name:  "Macbook lagi",
+			Price: 2000000.00,
 		},
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&orders)
+	json.NewEncoder(w).Encode(&products)
 }
 
 func main() {
 	// registerServiceWithConsul()
 	http.HandleFunc("/healthcheck", healthcheck)
-	http.HandleFunc("/orders", Orders)
-	http.HandleFunc("/order/config", Configuration)
-	fmt.Printf("order service is up on port: %s", port())
+	http.HandleFunc("/products", Products)
+	http.HandleFunc("/product/config", Configuration)
+	fmt.Printf("product service is up on port: %s", port())
 	http.ListenAndServe(port(), nil)
-
 }
 
 func healthcheck(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, `order service is good`)
+	fmt.Fprintf(w, `product service is good`)
 }
 
 func port() string {
-	p := os.Getenv("order_SERVICE_PORT")
-	h := os.Getenv("order_SERVICE_HOST")
+	p := os.Getenv("PRODUCT_SERVICE_PORT")
+	h := os.Getenv("PRODUCT_SERVICE_HOST")
 	if len(strings.TrimSpace(p)) == 0 {
-		return ":8200"
+		return ":8300"
 	}
 	return fmt.Sprintf("%s:%s", h, p)
 }

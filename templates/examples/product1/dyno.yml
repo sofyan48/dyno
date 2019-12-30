@@ -1,0 +1,12 @@
+service:
+    id: product1
+    name: product
+    host: iank.local
+    port: "8300"
+    tags:
+     - "delayed"
+     - "secondary"
+healthcheck:
+    path: healthcheck
+    interval: 50s
+    timeout: 3s

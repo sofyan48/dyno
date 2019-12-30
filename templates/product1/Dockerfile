@@ -4,5 +4,4 @@ RUN mkdir -p /app
 WORKDIR /app
 COPY . .
 RUN go build main.go
-EXPOSE 3000
-
+EXPOSE 8100

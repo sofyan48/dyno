@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 
 	consulapi "github.com/hashicorp/consul/api"
@@ -41,32 +40,6 @@ type order struct {
 	Status bool    `json:"status"`
 }
 
-// registerServiceWithConsul ...
-func registerServiceWithConsul() {
-	config := consulapi.DefaultConfig()
-	consul, err := consulapi.NewClient(config)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	registration := new(consulapi.AgentServiceRegistration)
-
-	registration.ID = "user"
-	registration.Name = "user"
-	address := hostname()
-	registration.Address = address
-	p, err := strconv.Atoi(port()[1:len(port())])
-	if err != nil {
-		log.Fatalln(err)
-	}
-	registration.Port = p
-	registration.Check = new(consulapi.AgentServiceCheck)
-	registration.Check.HTTP = fmt.Sprintf("http://%s:%v/healthcheck", address, p)
-	registration.Check.Interval = "5s"
-	registration.Check.Timeout = "3s"
-	consul.Agent().ServiceRegister(registration)
-}
-
 // lookupServiceWithConsul ...
 func lookupServiceWithConsul(svc string) (string, error) {
 	config := consulapi.DefaultConfig()
@@ -85,7 +58,6 @@ func lookupServiceWithConsul(svc string) (string, error) {
 }
 
 func main() {
-	registerServiceWithConsul()
 	http.HandleFunc("/healthcheck", healthcheck)
 	http.HandleFunc("/user/product", UserProduct)
 	http.HandleFunc("/user/orders", OrderView)

@@ -148,10 +148,11 @@ func initServiceRegister(ymlRegis entity.ServiceRegisterYML) error {
 	regis.Port = ymlRegis.Service.Port
 	regis.ID = ymlRegis.Service.ID
 	regis.Name = ymlRegis.Service.Name
-
+	regis.Tags = ymlRegis.Service.Tags
 	regis.HealthCheck = ymlRegis.HealthCheck.Endpoint
 	regis.Interval = ymlRegis.HealthCheck.Interval
 	regis.Timeout = ymlRegis.HealthCheck.Timeout
+
 	client, err := initConfigConsul()
 	if err != nil {
 		log.Fatalln(err)

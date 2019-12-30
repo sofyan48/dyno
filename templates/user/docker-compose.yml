@@ -1,0 +1,12 @@
+version: '3'
+services: 
+  app:
+    image: meongbego/pena
+    command: ["./main"]
+    ports:
+      - "3000:3000"
+  app1:
+    image: meongbego/pena
+    command: ["./main"]
+    ports:
+      - "3001:3000"
